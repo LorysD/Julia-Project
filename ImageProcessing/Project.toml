@@ -1,0 +1,4 @@
+name = "ImageProcessing"
+uuid = "79e6ad3b-d134-4b93-969b-0e4e00b6c745"
+authors = ["lorys <lorys.debbah@free.fr>"]
+version = "0.1.0"
