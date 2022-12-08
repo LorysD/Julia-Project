@@ -41,24 +41,16 @@ images_names = [
     "jetplane",
     "lake_color",
     "lake_gray",
-    "lena_color_256",
-    "lena_color_512",
-    "lena_gray_16bit",
-    "lena_gray_256",
-    "lena_gray_512",
     "lighthouse",
     "livingroom",
     "m51",
     "mandril_color",
     "mandril_gray",
-    "mandrill",
     "monarch_color",
     "monarch_color_256",
     "moonsurface",
     "morphology_test_512",
     "mountainstream",
-    "mri-stack",
-    "multi-channel-time-series.ome",
     "peppers_color",
     "peppers_gray",
     "pigskin_512",
@@ -86,10 +78,17 @@ images_names = [
     "woolen_cloth_512",
     "woolen_cloth_he_512"
 ]
+default_image = "fabio_color_512"
+
+filters_names = [
+    "identité",
+    "flou"
+]
+default_filter = "identité"
 
 function encode(io::IOBuffer, img)
-    io2=IOBuffer()
-    b64pipe=Base64EncodePipe(io2)
+    io2 = IOBuffer()
+    b64pipe = Base64EncodePipe(io2)
     write(io,"data:image/png;base64,")
     show(b64pipe, MIME"image/png"(), img)
     write(io, read(seekstart(io2)))
@@ -104,22 +103,89 @@ end
 
 app = dash()
 
-app.layout = html_div() do
+app.layout = html_div(id="main") do
     html_h1("Transformations d'images"),
-    dcc_dropdown(
-        id = "dropdown",
-        options = [(label=f, value=f) for f in images_names],
-        value = "mandril",
+    html_div(
+        id = "image-div",
+        [
+            html_div(
+                id = "input-div",
+                [
+                    dcc_dropdown(
+                        id = "input-dropdown",
+                        options = [(label = f, value = f) for f in images_names],
+                        value = default_image,
+                        clearable = false
+                    ),
+                    html_div(
+                        id = "input-viewer-wrapper",
+                        className = "viewer-wrapper",
+                        [
+                            html_img(
+                                id = "input-viewer",
+                                className = "viewer",
+                                src = encode(default_image)
+                            )
+                        ]
+                    )
+                ]
+            ),
+            html_div(
+                id = "filter-div",
+                [
+                    dcc_dropdown(
+                        id = "filter-dropdown",
+                        options = [(label = f, value = f) for f in filters_names],
+                        value = default_filter,
+                        clearable = false
+                    )
+                ]
+            ),
+            html_div(
+                id = "output-div",
+                html_div(
+                    id = "output-viewer-wrapper",
+                    className = "viewer-wrapper",
+                    [
+                        html_img(
+                            id = "output-viewer",
+                            className = "viewer",
+                            src = encode(default_image)
+                        )
+                    ]
+                )
+            )
+        ]
     ),
-    html_img(id="viewer", src=encode("mandril"))
+    html_div(id = "bench-div")
 end
 
+# server side callback
 callback!(
     app,
-    Output("viewer","src"),
-    Input("dropdown","value"),
+    Output("input-viewer", "src"),
+    Output("output-viewer", "src"),
+    Input("input-dropdown", "value"),
 ) do filename
-    encode(filename)
+    image = encode(filename)
+    return (image, image)
 end
 
-run_server(app, "0.0.0.0", debug=true)
+# client side callback
+callback!(
+    """
+    function(filter_value) {
+        if (window.filter_value == undefined)
+            window.filter_value = filter_value
+        else if (window.filter_value != filter_value)
+            return {"opacity": 0}
+        else
+            return {"opacity": 1}
+    }
+    """,
+    app,
+    Output("output-viewer", "style"),
+    Input("filter-dropdown", "value")
+)
+
+run_server(app, "0.0.0.0", debug = true)
