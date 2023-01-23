@@ -1,9 +1,9 @@
-function compute_execution_time(funcn, args, isexp)
+function compute_execution_time(funcn, args, language="julia")
     if !isa(args, Array)
         @error "Arguments must be passed as an array"
         exit(code=1)
     end
-    if isexp
+    if language == "R"
         result = @timed rcall(funcn, args...)
     else
         result = @timed f(args...)
