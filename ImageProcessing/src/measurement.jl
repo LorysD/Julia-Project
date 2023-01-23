@@ -1,10 +1,14 @@
-function compute_execution_time(f, args)
+function compute_execution_time(funcn, args, language="julia")
     if !isa(args, Array)
         @error "Arguments must be passed as an array"
         exit(code=1)
     end
-    result = @timed f(args...)
-    return result
+    if language == "R"
+        result = @timed rcall(funcn, args...)
+    else
+        result = @timed f(args...)
+    end
+    return result[2]
 end
 
 function compute_allocation(f, args::Array)
