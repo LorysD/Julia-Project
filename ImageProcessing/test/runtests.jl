@@ -15,6 +15,6 @@ end
 
 
 @testset "Execution time measurement" begin
-    @test typeof(compute_execution_time(compute_sum, [1000])) == Float64
+    @test typeof(compute_execution_time(compute_sum, [1000])[2]) == Float64
     @test compute_allocation(compute_sum, [1000]) == 32
 end
