@@ -1,3 +1,5 @@
+module measurement
+
 function compute_execution_time(funcn, args, language="julia")
     if !isa(args, Array)
         @error "Arguments must be passed as an array"
@@ -8,7 +10,7 @@ function compute_execution_time(funcn, args, language="julia")
     else
         result = @timed f(args...)
     end
-    return result[2]
+    return result
 end
 
 function compute_allocation(f, args::Array)
@@ -17,3 +19,5 @@ function compute_allocation(f, args::Array)
 end
 
 export compute_execution_time, compute_allocation
+
+end # end of the module
