@@ -103,11 +103,37 @@ function encode(io::IOBuffer, img::Matrix)
     write(io, read(seekstart(io2)))
 end
 
-# calls from the client when the value of the image selection dropdown changes
+# called from the client when the value of the image selection dropdown changes
 function encode(img::Matrix)
     io = IOBuffer()
     encode(io, img)
     String(take!(io))
+end
+
+function call_filter(file_name, filter_name, lang)
+    current_image = testimage(file_name)
+    image = 0
+    time = ""
+    if filter_name == "flou" || filter_name == "net" || filter_name == "gaufrage"
+        result = ImageProcessing.apply_filter(current_image, filter_name, lang)
+        if lang == "julia"
+            image = encode(result[1])
+        end
+        time = string(result[2], " seconde(s)")
+    elseif lang == "julia"
+        if filter_name == "identité"
+            image = encode(current_image)
+        elseif filter_name == "fabio"
+            image = encode(testimage("fabio_color_512"))
+        elseif filter_name == "julia"
+            image = encode(load("assets/julia.png"))
+        elseif filter_name == "Python"
+            image = encode(load("assets/Python.jpg"))
+        elseif filter_name == "R"
+            image = encode(load("assets/R.jpg"))
+        end
+    end
+    return image, time
 end
 
 const app = dash()
@@ -177,21 +203,21 @@ app.layout = html_div(id="main") do
                         className = "bench",
                         [
                             html_p("julia"),
-                            html_p(id = "bench-julia", "0 seconde(s)")
+                            html_p(id = "bench-julia", "")
                         ]
                     ),
                     html_div(
                         className = "bench",
                         [
                             html_p("Python"),
-                            html_p(id = "bench-python", "0 seconde(s)")
+                            html_p(id = "bench-python", "")
                         ]
                     ),
                     html_div(
                         className = "bench",
                         [
                             html_p("R"),
-                            html_p(id = "bench-r", "0 seconde(s)")
+                            html_p(id = "bench-r", "")
                         ]
                     )
                 ]
@@ -217,24 +243,27 @@ callback!(
     Input("input-dropdown", "value"),
     Input("filter-dropdown", "value"),
 ) do file_name, filter_name
-    current_image = testimage(file_name)
-    time = 0
-    if filter_name == "identité"
-        image = encode(current_image)
-    elseif filter_name == "fabio"
-        image = encode(testimage("fabio_color_512"))
-    elseif filter_name == "julia"
-        image = encode(load("assets/julia.png"))
-    elseif filter_name == "Python"
-        image = encode(load("assets/Python.jpg"))
-    elseif filter_name == "R"
-        image = encode(load("assets/R.jpg"))
-    else
-        result = ImageProcessing.apply_filter(current_image, filter_name, "julia")
-        image = encode(result[1])
-        time = result[2]
-    end
-    return image, string(time, " seconde(s)")
+    return call_filter(file_name, filter_name, "julia")
 end
 
-run_server(app, "0.0.0.0", debug = true)
+callback!(
+    app,
+    Output("bench-python", "children"),
+    Input("input-dropdown", "value"),
+    Input("filter-dropdown", "value"),
+) do file_name, filter_name
+    image, time = call_filter(file_name, filter_name, "Python")
+    return time
+end
+
+callback!(
+    app,
+    Output("bench-r", "children"),
+    Input("input-dropdown", "value"),
+    Input("filter-dropdown", "value"),
+) do file_name, filter_name
+    image, time = call_filter(file_name, filter_name, "R")
+    return time
+end
+
+run_server(app, "0.0.0.0", debug = false)
