@@ -177,21 +177,21 @@ app.layout = html_div(id="main") do
                         className = "bench",
                         [
                             html_p("julia"),
-                            html_p(id = "bench-julia", "0 secondes")
+                            html_p(id = "bench-julia", "0 seconde(s)")
                         ]
                     ),
                     html_div(
                         className = "bench",
                         [
                             html_p("Python"),
-                            html_p(id = "bench-python", "0 secondes")
+                            html_p(id = "bench-python", "0 seconde(s)")
                         ]
                     ),
                     html_div(
                         className = "bench",
                         [
                             html_p("R"),
-                            html_p(id = "bench-r", "0 secondes")
+                            html_p(id = "bench-r", "0 seconde(s)")
                         ]
                     )
                 ]
@@ -234,7 +234,7 @@ callback!(
         image = encode(result[1])
         time = result[2]
     end
-    return image, string(time, " secondes")
+    return image, string(time, " seconde(s)")
 end
 
 run_server(app, "0.0.0.0", debug = true)

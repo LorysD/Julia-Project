@@ -12,7 +12,7 @@
 }
 
 #input-div{
-    flex-grow: 2;
+    width: 40%;
 
     display: flex;
     flex-direction: column;
@@ -20,12 +20,12 @@
 }
 
 #filter-div {
-    flex-grow: 1;
     min-width: 15%;
 }
 
 #output-div {
-    flex-grow: 2;
+    width: 40%;
+
     display: flex;
 }
 #output-viewer-wrapper {
@@ -39,7 +39,8 @@
     justify-content: center;
 }
 .viewer {
-    max-width: 100%;
+    max-width: 512px;
+    max-height: 512px;
     height: auto;
 }
 
