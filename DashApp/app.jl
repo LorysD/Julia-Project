@@ -1,10 +1,3 @@
-#=
-app:
-- Julia version: 1.8.3
-- Author: vadim
-- Date: 2022-12-01
-=#
-
 using Base64
 
 using Dash
