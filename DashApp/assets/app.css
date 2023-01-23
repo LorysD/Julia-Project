@@ -42,3 +42,22 @@
     max-width: 100%;
     height: auto;
 }
+
+#bench-div {
+    width: 100%;
+}
+#bench-div h4 {
+    margin-top: 25px;
+    margin-bottom: 5px;
+}
+#bench-subdiv {
+    display: flex;
+    justify-content: space-evenly;
+}
+.bench {
+    flex-grow: 1;
+}
+.bench p {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}

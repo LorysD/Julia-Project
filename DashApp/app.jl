@@ -166,7 +166,38 @@ app.layout = html_div(id="main") do
             )
         ]
     ),
-    html_div(id = "bench-div")
+    html_div(
+        id = "bench-div",
+        [
+            html_h4("Temps d'exécution"),
+            html_div(
+                id = "bench-subdiv",
+                [
+                    html_div(
+                        className = "bench",
+                        [
+                            html_p("julia"),
+                            html_p(id = "bench-julia", "0 secondes")
+                        ]
+                    ),
+                    html_div(
+                        className = "bench",
+                        [
+                            html_p("Python"),
+                            html_p(id = "bench-python", "0 secondes")
+                        ]
+                    ),
+                    html_div(
+                        className = "bench",
+                        [
+                            html_p("R"),
+                            html_p(id = "bench-r", "0 secondes")
+                        ]
+                    )
+                ]
+            )
+        ]
+    )
 end
 
 # server side callbacks
@@ -182,10 +213,12 @@ end
 callback!(
     app,
     Output("output-viewer", "src"),
+    Output("bench-julia", "children"),
     Input("input-dropdown", "value"),
     Input("filter-dropdown", "value"),
 ) do file_name, filter_name
     current_image = testimage(file_name)
+    time = 0
     if filter_name == "identité"
         image = encode(current_image)
     elseif filter_name == "fabio"
@@ -201,24 +234,7 @@ callback!(
         image = encode(result[1])
         time = result[2]
     end
-    return image
+    return image, string(time, " secondes")
 end
-
-# client side callback
-callback!(
-    """
-    function(filter_value) {
-        if (window.filter_value == undefined)
-            window.filter_value = filter_value
-        else if (window.filter_value != filter_value)
-            return {"opacity": 1}
-        else
-            return {"opacity": 1}
-    }
-    """,
-    app,
-    Output("output-viewer", "style"),
-    Input("filter-dropdown", "value")
-)
 
 run_server(app, "0.0.0.0", debug = true)
