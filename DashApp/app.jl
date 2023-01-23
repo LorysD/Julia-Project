@@ -9,8 +9,9 @@ using Base64
 
 using Dash
 using ImageShow, Plots, TestImages
+using PyCall
 
-images_names = [
+const images_names = [
     "airplaneF16",
     "autumn_leaves",
     "barbara_color",
@@ -78,13 +79,15 @@ images_names = [
     "woolen_cloth_512",
     "woolen_cloth_he_512"
 ]
-default_image = "fabio_color_512"
+const default_image = "fabio_color_512"
 
-filters_names = [
+const filters_names = [
     "identité",
     "flou"
 ]
-default_filter = "identité"
+const default_filter = "identité"
+
+const skimage_io = PyNULL()
 
 function encode(io::IOBuffer, img)
     io2 = IOBuffer()
@@ -94,14 +97,16 @@ function encode(io::IOBuffer, img)
     write(io, read(seekstart(io2)))
 end
 
+# calls from the client when the value of the image selection dropdown changes
 function encode(file::AbstractString)
+    copy!(skimage_io, pyimport_conda("skimage.io", "scikit-image"))
     img = testimage(file)
     io = IOBuffer()
     encode(io, img)
     String(take!(io))
 end
 
-app = dash()
+const app = dash()
 
 app.layout = html_div(id="main") do
     html_h1("Transformations d'images"),
