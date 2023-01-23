@@ -3,10 +3,16 @@ function register_event() {
   if(filter_dropdown != null) {
     clearInterval(refreshID);
 
+    const image_dropdown = document.getElementById("input-dropdown");
     const bench_julia = document.getElementById("bench-julia");
     const bench_python = document.getElementById("bench-python");
     const bench_r = document.getElementById("bench-r");
 
+    image_dropdown.addEventListener("click", (event) => {
+      bench_julia.textContent = "";
+      bench_python.textContent = "";
+      bench_r.textContent = "";
+    });
     filter_dropdown.addEventListener("click", (event) => {
       bench_julia.textContent = "";
       bench_python.textContent = "";
