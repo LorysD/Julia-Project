@@ -8,8 +8,9 @@ app:
 using Base64
 
 using Dash
-using ImageShow, Plots, TestImages
-using PyCall
+using FileIO, Images, ImageShow, Plots, TestImages
+
+include("../ImageProcessing/src/ImageProcessing.jl")
 
 const images_names = [
     "airplaneF16",
@@ -79,17 +80,22 @@ const images_names = [
     "woolen_cloth_512",
     "woolen_cloth_he_512"
 ]
-const default_image = "fabio_color_512"
+const default_image_name = "fabio_color_512"
+const current_image = testimage(default_image_name)
 
 const filters_names = [
     "identité",
-    "flou"
+    "flou",
+    "net",
+    "gaufrage",
+    "fabio",
+    "julia",
+    "Python",
+    "R"
 ]
 const default_filter = "identité"
 
-const skimage_io = PyNULL()
-
-function encode(io::IOBuffer, img)
+function encode(io::IOBuffer, img::Matrix)
     io2 = IOBuffer()
     b64pipe = Base64EncodePipe(io2)
     write(io,"data:image/png;base64,")
@@ -98,9 +104,7 @@ function encode(io::IOBuffer, img)
 end
 
 # calls from the client when the value of the image selection dropdown changes
-function encode(file::AbstractString)
-    copy!(skimage_io, pyimport_conda("skimage.io", "scikit-image"))
-    img = testimage(file)
+function encode(img::Matrix)
     io = IOBuffer()
     encode(io, img)
     String(take!(io))
@@ -119,7 +123,7 @@ app.layout = html_div(id="main") do
                     dcc_dropdown(
                         id = "input-dropdown",
                         options = [(label = f, value = f) for f in images_names],
-                        value = default_image,
+                        value = default_image_name,
                         clearable = false
                     ),
                     html_div(
@@ -129,7 +133,7 @@ app.layout = html_div(id="main") do
                             html_img(
                                 id = "input-viewer",
                                 className = "viewer",
-                                src = encode(default_image)
+                                src = encode(current_image)
                             )
                         ]
                     )
@@ -155,7 +159,7 @@ app.layout = html_div(id="main") do
                         html_img(
                             id = "output-viewer",
                             className = "viewer",
-                            src = encode(default_image)
+                            src = encode(current_image)
                         )
                     ]
                 )
@@ -165,15 +169,39 @@ app.layout = html_div(id="main") do
     html_div(id = "bench-div")
 end
 
-# server side callback
+# server side callbacks
 callback!(
     app,
     Output("input-viewer", "src"),
+    Input("input-dropdown", "value"),
+) do file_name
+    current_image = testimage(file_name)
+    return encode(current_image)
+end
+
+callback!(
+    app,
     Output("output-viewer", "src"),
     Input("input-dropdown", "value"),
-) do filename
-    image = encode(filename)
-    return (image, image)
+    Input("filter-dropdown", "value"),
+) do file_name, filter_name
+    current_image = testimage(file_name)
+    if filter_name == "identité"
+        image = encode(current_image)
+    elseif filter_name == "fabio"
+        image = encode(testimage("fabio_color_512"))
+    elseif filter_name == "julia"
+        image = encode(load("assets/julia.png"))
+    elseif filter_name == "Python"
+        image = encode(load("assets/Python.jpg"))
+    elseif filter_name == "R"
+        image = encode(load("assets/R.jpg"))
+    else
+        result = ImageProcessing.apply_filter(current_image, filter_name, "julia")
+        image = encode(result[1])
+        time = result[2]
+    end
+    return image
 end
 
 # client side callback
@@ -183,7 +211,7 @@ callback!(
         if (window.filter_value == undefined)
             window.filter_value = filter_value
         else if (window.filter_value != filter_value)
-            return {"opacity": 0}
+            return {"opacity": 1}
         else
             return {"opacity": 1}
     }

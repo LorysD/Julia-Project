@@ -4,7 +4,7 @@ function compute_execution_time(f, args)
         exit(code=1)
     end
     result = @timed f(args...)
-    return result[2]
+    return result
 end
 
 function compute_allocation(f, args::Array)

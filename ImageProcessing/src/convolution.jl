@@ -1,4 +1,6 @@
-function conv(img::Matrix{RGB{N0f8}}, filter::Matrix{Int8})
+using Images
+
+function conv(img::Matrix, filter::Matrix{Int8})
     img_size = size(img)
     filter_size = size(filter)
     filter_weight = sum(filter)
@@ -15,7 +17,8 @@ function conv(img::Matrix{RGB{N0f8}}, filter::Matrix{Int8})
             img_out[i, j] = clamp01(pixel)
         end
     end
-    img_out
+
+    return img_out
 end
 
 export conv
