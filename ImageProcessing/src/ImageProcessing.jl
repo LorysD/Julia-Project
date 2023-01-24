@@ -7,6 +7,7 @@ function jl_apply_filter(img::Matrix, filter::Matrix{Int8})
 end
 
 # Python call
+
 using PyCall
 py"""
 import sys
