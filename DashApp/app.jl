@@ -103,8 +103,18 @@ function encode(img::Matrix)
     String(take!(io))
 end
 
-function call_filter(file_name, filter_name, lang)
-    current_image = testimage(file_name)
+function get_filter(filter_name)
+    header = ""
+    result = fill("", 9)
+    if filter_name == "flou" || filter_name == "net" || filter_name == "gaufrage"
+        header = "filter"
+        result = vec(ImageProcessing.get_filter(filter_name))
+    end
+    return (header, result...)
+end
+
+function apply_filter(image_name, filter_name, lang)
+    current_image = testimage(image_name)
     image = 0
     time = ""
     if filter_name == "flou" || filter_name == "net" || filter_name == "gaufrage"
@@ -149,6 +159,11 @@ app.layout = html_div(id="main") do
                         id = "input-viewer-wrapper",
                         className = "viewer-wrapper",
                         [
+                            html_p(
+                                id = "input-name",
+                                className = "hidden",
+                                default_image_name
+                            ),
                             html_img(
                                 id = "input-viewer",
                                 className = "viewer",
@@ -166,6 +181,44 @@ app.layout = html_div(id="main") do
                         options = [(label = f, value = f) for f in filters_names],
                         value = default_filter,
                         clearable = false
+                    ),
+                    html_div(
+                        id = "filter-viewer-wrapper",
+                        className = "viewer-wrapper",
+                        [
+                            html_p(
+                                id = "filter-name",
+                                className = "hidden",
+                                default_filter
+                            ),
+                            html_table(
+                                id = "filter-table", 
+                                [
+                                    html_tbody(
+                                        [
+                                            html_tr([
+                                                html_th(id = "filter-head", colSpan = 3)
+                                            ]),
+                                            html_tr([
+                                                html_td(id = "filter-11"),
+                                                html_td(id = "filter-12"),
+                                                html_td(id = "filter-13")
+                                            ]),
+                                            html_tr([
+                                                html_td(id = "filter-21"),
+                                                html_td(id = "filter-22"),
+                                                html_td(id = "filter-23")
+                                            ]),
+                                            html_tr([
+                                                html_td(id = "filter-31"),
+                                                html_td(id = "filter-32"),
+                                                html_td(id = "filter-33")
+                                            ])
+                                        ]
+                                    )
+                                ]
+                            )
+                        ]
                     )
                 ]
             ),
@@ -223,39 +276,58 @@ end
 callback!(
     app,
     Output("input-viewer", "src"),
-    Input("input-dropdown", "value"),
-) do file_name
-    current_image = testimage(file_name)
-    return encode(current_image)
+    Output("input-name", "children"),
+    Input("input-dropdown", "value")
+) do image_name
+    current_image = testimage(image_name)
+    return encode(current_image), image_name
+end
+
+callback!(
+    app,
+    Output("filter-head", "children"),
+    Output("filter-11", "children"),
+    Output("filter-12", "children"),
+    Output("filter-13", "children"),
+    Output("filter-21", "children"),
+    Output("filter-22", "children"),
+    Output("filter-23", "children"),
+    Output("filter-31", "children"),
+    Output("filter-32", "children"),
+    Output("filter-33", "children"),
+    Output("filter-name", "children"),
+    Input("filter-dropdown", "value")
+) do filter_name
+    return (get_filter(filter_name)..., filter_name)
 end
 
 callback!(
     app,
     Output("output-viewer", "src"),
     Output("bench-julia", "children"),
-    Input("input-dropdown", "value"),
-    Input("filter-dropdown", "value"),
-) do file_name, filter_name
-    return call_filter(file_name, filter_name, "julia")
+    Input("input-name", "children"),
+    Input("filter-name", "children")
+) do image_name, filter_name
+    return apply_filter(image_name, filter_name, "julia")
 end
 
 callback!(
     app,
     Output("bench-python", "children"),
-    Input("input-dropdown", "value"),
-    Input("filter-dropdown", "value"),
-) do file_name, filter_name
-    image, time = call_filter(file_name, filter_name, "Python")
+    Input("input-name", "children"),
+    Input("filter-name", "children")
+) do image_name, filter_name
+    image, time = apply_filter(image_name, filter_name, "Python")
     return time
 end
 
 callback!(
     app,
     Output("bench-r", "children"),
-    Input("input-dropdown", "value"),
-    Input("filter-dropdown", "value"),
-) do file_name, filter_name
-    image, time = call_filter(file_name, filter_name, "R")
+    Input("input-name", "children"),
+    Input("filter-name", "children")
+) do image_name, filter_name
+    image, time = apply_filter(image_name, filter_name, "R")
     return time
 end
 

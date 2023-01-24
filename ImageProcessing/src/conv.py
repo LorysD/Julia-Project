@@ -4,12 +4,18 @@ import numpy as np
 
 
 def padding(image, filter, color):
-    size_padding = int((np.shape(filter)[1] - 1) / 2)
+    image_size = np.shape(image)
+    filter_size = np.shape(filter)[0]
+    size_padding = int((filter_size - 1) / 2)
     if color:
-        image = np.pad(image, size_padding)[:, :, size_padding:(np.shape(image)[-1]+size_padding)]
+        padded_image = np.zeros(np.array(image_size) + np.array((filter_size - 1, filter_size - 1, 0)))
+        padded_image[size_padding:image_size[0] + size_padding, size_padding:image_size[1] + size_padding, :] = \
+            image
     else:
-        image = np.pad(image, size_padding)
-    return image
+        padded_image = np.zeros(np.array(image_size) + filter_size - 1)
+        padded_image[size_padding:image_size[0] + size_padding, size_padding:image_size[1] + size_padding] = \
+            image
+    return padded_image
 
 
 def transform_pixel(i, j, padded_image, filter, color):

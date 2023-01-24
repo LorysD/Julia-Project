@@ -1,11 +1,12 @@
 padding <- function(image, filter, color) {
-  size_padding <- (dim(filter)[1] - 1) / 2
+  filter_size <- dim(filter)[1]
+  size_padding <- (filter_size - 1) / 2
   if (color) {
-    padded_image <- array(0, dim(image) + c(dim(filter)[1] - 1, dim(filter)[2] - 1, 0))
-    padded_image[1:dim(image)[1] + size_padding, 1:dim(image)[2] + size_padding, ] <- image[, , ]
+    padded_image <- array(0, dim(image) + c(filter_size - 1, filter_size - 1, 0))
+    padded_image[1:dim(image)[1] + size_padding, 1:dim(image)[2] + size_padding, ] <- image
   } else {
-    padded_image <- array(0, dim(image) + c(dim(filter)[1] - 1, dim(filter)[2] - 1))
-    padded_image[1:dim(image)[1] + size_padding, 1:dim(image)[2] + size_padding] <- image[, ]
+    padded_image <- array(0, dim(image) + filter_size - 1)
+    padded_image[1:dim(image)[1] + size_padding, 1:dim(image)[2] + size_padding] <- image
   }
   return(padded_image)
 }
@@ -34,13 +35,16 @@ conv <- function(image, filter) {
   transformed_image <- image
   padded_image <- padding(image, filter, color)
   size_padding <- (dim(filter)[1] - 1) / 2
-  # for (i in 100:150) { # pour ne faire qu'un bout de l'image si trop long
   for (i in 1:dim(image)[1]) {
-    i_decal <- i + size_padding
-    # for (j in 100:150) { # pour ne faire qu'un bout de l'image si trop long
+    i_lag <- i + size_padding
     for (j in 1:dim(image)[2]) {
-      j_decal <- j + size_padding
-      transformed_image[i, j,] <- transform_pixel(i_decal, j_decal, padded_image, filter, color)
+      j_lag <- j + size_padding
+      transformed_pixel <- transform_pixel(i_lag, j_lag, padded_image, filter, color)
+      if (color) {
+        transformed_image[i, j, ] <- transformed_pixel
+      } else {
+        transformed_image[i, j] <- transformed_pixel
+      }
     }
   }
   return(list(transformed_image, as.numeric(Sys.time() - start_time)))

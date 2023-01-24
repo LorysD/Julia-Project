@@ -9,14 +9,20 @@ function register_event() {
     const bench_r = document.getElementById("bench-r");
 
     image_dropdown.addEventListener("click", (event) => {
-      bench_julia.textContent = "";
-      bench_python.textContent = "";
-      bench_r.textContent = "";
+      let menu = document.getElementsByClassName("Select-menu-outer")[0];
+      menu.addEventListener("click", (event) => {
+        bench_julia.textContent = "";
+        bench_python.textContent = "";
+        bench_r.textContent = "";
+      });
     });
     filter_dropdown.addEventListener("click", (event) => {
-      bench_julia.textContent = "";
-      bench_python.textContent = "";
-      bench_r.textContent = "";
+      let menu = document.getElementsByClassName("Select-menu-outer")[0];
+      menu.addEventListener("click", (event) => {
+        bench_julia.textContent = "";
+        bench_python.textContent = "";
+        bench_r.textContent = "";
+      });
     });
   }
 }
