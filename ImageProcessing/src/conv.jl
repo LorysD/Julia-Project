@@ -1,5 +1,14 @@
 using Images
 
+"""
+    conv(img::Matrix, filter::Matrix{Int8})
+
+Apply a convolution filter `filter` to the image `img`.
+
+# Arguments
+- `img::Matrix`: The image to transform
+- `filter::Matrix{Int8}`: The filter to apply
+"""
 function conv(img::Matrix, filter::Matrix{Int8})
     img_size = size(img)
     filter_size = size(filter)
