@@ -164,11 +164,11 @@ app.layout = html_div(id="main") do
                                 className = "hidden",
                                 default_image_name
                             ),
-                            html_img(
+                            dcc_loading(html_img(
                                 id = "input-viewer",
                                 className = "viewer",
                                 src = encode(current_image)
-                            )
+                            ), type="circle")
                         ]
                     )
                 ]
@@ -184,7 +184,7 @@ app.layout = html_div(id="main") do
                     ),
                     html_div(
                         id = "filter-viewer-wrapper",
-                        className = "viewer-wrapper",
+                        className = "viewer-wrapper", 
                         [
                             html_p(
                                 id = "filter-name",
@@ -192,7 +192,7 @@ app.layout = html_div(id="main") do
                                 default_filter
                             ),
                             html_table(
-                                id = "filter-table", 
+                                id = "filter-table",
                                 [
                                     html_tbody(
                                         [
@@ -227,13 +227,11 @@ app.layout = html_div(id="main") do
                 html_div(
                     id = "output-viewer-wrapper",
                     className = "viewer-wrapper",
-                    [
-                        html_img(
-                            id = "output-viewer",
-                            className = "viewer",
-                            src = encode(current_image)
-                        )
-                    ]
+                    dcc_loading(html_img(
+                        id = "output-viewer",
+                        className = "viewer",
+                        src = encode(current_image)
+                    ), type="circle")
                 )
             )
         ]
@@ -249,21 +247,21 @@ app.layout = html_div(id="main") do
                         className = "bench",
                         [
                             html_p("julia"),
-                            html_p(id = "bench-julia", "")
+                            dcc_loading(html_p(id = "bench-julia", ""))
                         ]
                     ),
                     html_div(
                         className = "bench",
                         [
                             html_p("Python"),
-                            html_p(id = "bench-python", "")
+                            dcc_loading(html_p(id = "bench-python", ""))
                         ]
                     ),
                     html_div(
                         className = "bench",
                         [
                             html_p("R"),
-                            html_p(id = "bench-r", "")
+                            dcc_loading(html_p(id = "bench-r", ""))
                         ]
                     )
                 ]
