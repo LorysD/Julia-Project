@@ -37,16 +37,6 @@ However, we used some `Julia` packages:
 
 The convolution implementation is the same for the 3 languages and is really naive.
 
-# Installation
-
-To install the package go to **ImageProcessing** and open **julia-repl** than run the following commands
-
-```julia-repl
-julia> ]
-julia> activate .
-julia> build ImageProcessing
-```
-
 ## Dependencies
 
 ```julia-repl
@@ -62,6 +52,20 @@ pkg> build PyCall
 ```commandline
 > cd DashApp
 > julia app.jl
+```
+
+
+## Documentation
+
+```julia-repl
+julia> ]
+pkg> add Documenter
+```
+
+You can generate the documentation associated to the project by setting the current directory to `ImageProcessing` and running the following bash command
+
+```bash
+$ julia docs/Make.jl
 ```
 
 # Feedback

@@ -22,3 +22,42 @@ Measurement.compute_allocation
 ```
 
 # ImageProcessing module
+
+The `ImageProcessing` modules provides several functions to apply filters
+
+- **jl\_apply\_filter**: Apply a filter to an image using julia
+- **py\_apply\_filter**: Apply a filter to an image using python
+- **r\_apply\_filter**: Apply a filter to an image using r
+- **img\_to\_arr**: Convert and RGB matrix to a Float64 matrix
+- **get\_filter**: Returns the matrix corresponding to a filter name
+- **apply\_filter**: Apply filter to an image using a language
+
+```@docs
+ImageProcessing.jl_apply_filter
+```
+
+
+```@docs
+ImageProcessing.py_apply_filter
+```
+
+```@docs
+ImageProcessing.r_apply_filter
+```
+
+
+```@docs
+ImageProcessing.img_to_arr
+```
+
+```@docs
+ImageProcessing.get_filter
+```
+
+```@docs
+ImageProcessing.apply_filter
+```
+
+```@docs
+ImageProcessing.conv
+```
