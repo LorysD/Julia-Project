@@ -32,10 +32,11 @@ However, we used some `Julia` packages:
 - `TestImage` to provide images examples,
 - `Images` to ease the use of the `TestImage`,
 - `PyCall` to call external `python` scripts,
-- `RCall` for `R` scripts,
-- `Measurement` to track execution time of `Julia` instructions.
+- `RCall` for `R` scripts.
 
 The convolution implementation is the same for the 3 languages and is really naive.
+
+# Quick start
 
 ## Dependencies
 
@@ -43,15 +44,15 @@ The convolution implementation is the same for the 3 languages and is really nai
 julia> ENV["PYTHON"]=""
 julia> ]
 pkg> add Dash FileIO Images ImageShow Plots TestImages
-pkg> add PyCall RCall Measurement
+pkg> add PyCall RCall
 pkg> build PyCall
 ```
 
 ## Running the Dash app
 
-```commandline
-> cd DashApp
-> julia app.jl
+```bash
+$ cd DashApp
+$ julia app.jl
 ```
 
 
@@ -65,6 +66,7 @@ pkg> add Documenter
 You can generate the documentation associated to the project by setting the current directory to `ImageProcessing` and running the following bash command
 
 ```bash
+$ cd ImageProcessing
 $ julia docs/Make.jl
 ```
 
